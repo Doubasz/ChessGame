@@ -1,5 +1,7 @@
 package org.example.chess;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
@@ -7,14 +9,17 @@ import javafx.scene.image.ImageView;
 import java.util.ArrayList;
 
 public class Pieces {
-    private final Button button;
+    private Button button;
     String name;
     private String position;
-    private ArrayList<String> legalMoves = new ArrayList<>();
+    private static ArrayList<String> legalMoves = new ArrayList<>();
     private boolean canBeCaptured;
     private boolean isAlive;
     private boolean isDame;
     private Board board;
+
+
+    public Pieces(){}
 
     public Pieces(Board board, Button b, int pos1, int pos2, boolean dame){
         int[] pos = {pos1, pos2};
@@ -80,29 +85,77 @@ public class Pieces {
             }
 
             else if(this.position.equals("e8")){
-                this.name = "King";
+                this.name = "blackKing";
                 ImageView blackKing = new ImageView(getClass().getResource("img/blackKing.png").toExternalForm());
                 this.button.setGraphic(blackKing);
             }
+            else if(this.position.equals("e1")){
+                this.name = "whiteKing";
+                ImageView whiteKing = new ImageView(getClass().getResource("img/whiteKing.png").toExternalForm());
+                this.button.setGraphic(whiteKing);
+            }
+
             else{
                 this.name = "";
             }
         }
+
+        this.button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                canSwap();
+            }
+        });
     }
 
     public void innitLegalMoves(){
-        if(this.name.equals("Pawn")){
+        if(this.name.equals("blackPawn")){
             for(int i = 1; i < 3; i++){
                 int[] pos = stringToPos(this.position);
                 try{
                     if(this.board.gridGame[pos[0]][pos[1] + i].name.isEmpty()){
-                        this.legalMoves.add(this.board.gridGame[pos[0]][pos[1] + i].position);
+                        legalMoves.add(this.board.gridGame[pos[0]][pos[1] + i].position);
                     }
                 }
                 catch(Exception ignored){}
             }
         }
-        displayLegalMoves(this.legalMoves);
+        displayLegalMoves(legalMoves);
+    }
+
+    public void canSwap(){
+        if(!this.name.isEmpty()){
+            legalMoves.clear();
+            innitLegalMoves();
+            this.board.chosen = this;
+        }
+        else{
+            if(!(this.board.chosen == null)){
+                for(String move : legalMoves){
+                    if(this.position.equals(move)){
+                        swap(this, this.board.chosen);
+                    }
+                }
+            }
+        }
+    }
+
+    public void swap(Pieces p1, Pieces p2){
+        Pieces temp = new Pieces();
+        temp.name = "";
+        temp.button = new Button();
+
+        temp.name = p1.name;
+        p1.name = p2.name;
+        p2.name = temp.name;
+
+        temp.position = p1.position;
+        p1.position = p2.position;
+        p2.position = temp.position;
+
+        temp.button.setGraphic(p1.button.getGraphic());
+        p1.button.setGraphic(p2.button.getGraphic());
+        p2.button.setGraphic(temp.button.getGraphic());
     }
 
 
