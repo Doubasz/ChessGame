@@ -1,5 +1,7 @@
 package org.example.chess;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -10,6 +12,8 @@ import javafx.scene.paint.Color;
 public class Board {
     Pieces[][] gridGame = new Pieces[8][8];
     GridPane grid = new GridPane();
+    Pieces chosen;
+
 
     public Board(){
 
