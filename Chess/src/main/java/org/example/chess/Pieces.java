@@ -17,6 +17,7 @@ public class Pieces {
     private boolean isAlive;
     private boolean isDame;
     private Board board;
+    private boolean isDebut;
 
 
     public Pieces(){}
@@ -34,11 +35,13 @@ public class Pieces {
                 ImageView blackPawn = new ImageView(getClass().getResource("img/blackPawn.png").toExternalForm());
                 this.name = "blackPawn";
                 this.button.setGraphic(blackPawn);
+                this.isDebut = true;
             }
             else if(this.position.charAt(1) == '2'){
                 ImageView whitePawn = new ImageView(getClass().getResource("img/whitePawn.png").toExternalForm());
                 this.name = "whitePawn";
                 this.button.setGraphic(whitePawn);
+                this.isDebut = true;
             }
             else if(this.position.equals("a8") || this.position.equals("h8")){
                 this.name = "blackRook";
@@ -94,7 +97,6 @@ public class Pieces {
                 ImageView whiteKing = new ImageView(getClass().getResource("img/whiteKing.png").toExternalForm());
                 this.button.setGraphic(whiteKing);
             }
-
             else{
                 this.name = "";
             }
@@ -109,32 +111,275 @@ public class Pieces {
     }
 
     public void innitLegalMoves(){
+        legalMoves.clear();
+        int[] pos = stringToPos(this.position);
+
+        //Initialising the legal moves of pawns
         if(this.name.equals("blackPawn")){
-            for(int i = 1; i < 3; i++){
-                int[] pos = stringToPos(this.position);
+
+            //Moving forward with a Pawn
+            if(this.isDebut)
+            {
+                for(int i = 1; i < 3; i++){
+                    try{
+                        if(this.board.gridGame[pos[0]][pos[1] + i].name.isEmpty()){
+                            legalMoves.add(this.board.gridGame[pos[0]][pos[1] + i].position);
+                        }
+                    }
+                    catch(Exception ignored){}
+                }
+                this.isDebut = false;
+            }
+            else{
                 try{
-                    if(this.board.gridGame[pos[0]][pos[1] + i].name.isEmpty()){
-                        legalMoves.add(this.board.gridGame[pos[0]][pos[1] + i].position);
+                    if(this.board.gridGame[pos[0]][pos[1] + 1].name.isEmpty()){
+                        legalMoves.add(this.board.gridGame[pos[0]][pos[1] + 1].position);
                     }
                 }
                 catch(Exception ignored){}
             }
+
+            //Capturing with the Pawn
+            try {
+                if(!this.board.gridGame[pos[0] + 1][pos[1] + 1].name.isEmpty() && this.board.gridGame[pos[0] + 1][pos[1] + 1].name.contains("white")){
+                    this.board.gridGame[pos[0] + 1][pos[1] + 1].canBeCaptured = true;
+                    legalMoves.add(this.board.gridGame[pos[0] + 1][pos[1] + 1].position);
+                }
+                if(!this.board.gridGame[pos[0] - 1][pos[1] + 1].name.isEmpty() && this.board.gridGame[pos[0] - 1][pos[1] + 1].name.contains("white")){
+                    this.board.gridGame[pos[0] - 1][pos[1] + 1].canBeCaptured = true;
+                    legalMoves.add(this.board.gridGame[pos[0] - 1][pos[1] + 1].position);
+                }
+            }
+            catch (Exception ignored){}
+
         }
+
+        else if(this.name.equals("whitePawn")){
+
+            //Moving forward with a Pawn
+            if(this.isDebut)
+            {
+                for(int i = 1; i < 3; i++){
+                    pos = stringToPos(this.position);
+                    try{
+                        if(this.board.gridGame[pos[0]][pos[1] - i].name.isEmpty()){
+                            legalMoves.add(this.board.gridGame[pos[0]][pos[1] - i].position);
+                        }
+                    }
+                    catch(Exception ignored){}
+                }
+                this.isDebut = false;
+            }
+            else{
+                pos = stringToPos(this.position);
+                try{
+                    if(this.board.gridGame[pos[0]][pos[1] - 1].name.isEmpty()){
+                        legalMoves.add(this.board.gridGame[pos[0]][pos[1] - 1].position);
+                    }
+                }
+                catch(Exception ignored){}
+            }
+
+            //Capturing with the pawn
+            try {
+                if(!this.board.gridGame[pos[0] - 1][pos[1] - 1].name.isEmpty() && this.board.gridGame[pos[0] - 1][pos[1] - 1].name.contains("black")){
+                    this.board.gridGame[pos[0] - 1][pos[1] - 1].canBeCaptured = true;
+                    legalMoves.add(this.board.gridGame[pos[0] - 1][pos[1] - 1].position);
+                }
+                if(!this.board.gridGame[pos[0] + 1][pos[1] - 1].name.isEmpty() && this.board.gridGame[pos[0] + 1][pos[1] - 1].name.contains("black")){
+                    this.board.gridGame[pos[0] + 1][pos[1] - 1].canBeCaptured = true;
+                    legalMoves.add(this.board.gridGame[pos[0] + 1][pos[1] - 1].position);
+                }
+            }
+            catch (Exception ignored){}
+        }
+
+        //Initializing the moves of knights
+
+        else if(this.name.equals("blackKnight")){
+            try {
+                if(this.board.gridGame[pos[0] + 1][pos[1] - 2].name.isEmpty()){
+                    legalMoves.add(this.board.gridGame[pos[0] + 1][pos[1] - 2].position);
+                }
+                else if(this.board.gridGame[pos[0] + 1][pos[1] - 2].name.contains("white")){
+                    this.board.gridGame[pos[0] + 1][pos[1] - 2].canBeCaptured = true;
+                    legalMoves.add(this.board.gridGame[pos[0] + 1][pos[1] - 2].position);
+                }
+            } catch (Exception ignored) {}
+            try {
+                if(this.board.gridGame[pos[0] + 1][pos[1] + 2].name.isEmpty()){
+
+                    legalMoves.add(this.board.gridGame[pos[0] + 1][pos[1] + 2].position);
+                }
+                else if(this.board.gridGame[pos[0] + 1][pos[1] + 2].name.contains("white")){
+                    this.board.gridGame[pos[0] + 1][pos[1] + 2].canBeCaptured = true;
+                    legalMoves.add(this.board.gridGame[pos[0] + 1][pos[1] + 2].position);
+                }
+            } catch (Exception ignored) {}
+
+            try {
+                if(this.board.gridGame[pos[0] - 1][pos[1] - 2].name.isEmpty()){
+
+                    legalMoves.add(this.board.gridGame[pos[0] - 1][pos[1] - 2].position);
+                }
+                else if(this.board.gridGame[pos[0] - 1][pos[1] - 2].name.contains("white")){
+                    this.board.gridGame[pos[0] - 1][pos[1] - 2].canBeCaptured = true;
+                    legalMoves.add(this.board.gridGame[pos[0] - 1][pos[1] - 2].position);
+                }
+            } catch (Exception ignored) {}
+            try {
+                if(this.board.gridGame[pos[0] - 1][pos[1] + 2].name.isEmpty()){
+                    legalMoves.add(this.board.gridGame[pos[0] - 1][pos[1] + 2].position);
+                }
+                else if(this.board.gridGame[pos[0] - 1][pos[1] + 2].name.contains("white")){
+                    this.board.gridGame[pos[0] - 1][pos[1] + 2].canBeCaptured = true;
+                    legalMoves.add(this.board.gridGame[pos[0] - 1][pos[1] + 2].position);
+                }
+            } catch (Exception ignored) {}
+
+            try {
+                if(this.board.gridGame[pos[0] - 2][pos[1] + 1].name.isEmpty()){
+                    legalMoves.add(this.board.gridGame[pos[0] - 2][pos[1] + 1].position);
+                }
+                else if(this.board.gridGame[pos[0] - 2][pos[1] + 1].name.contains("white")){
+                    this.board.gridGame[pos[0] - 2][pos[1] + 1].canBeCaptured = true;
+                    legalMoves.add(this.board.gridGame[pos[0] - 2][pos[1] + 1].position);
+                }
+            } catch (Exception ignored) {}
+            try {
+                if(this.board.gridGame[pos[0] - 2][pos[1] - 1].name.isEmpty()){
+                    legalMoves.add(this.board.gridGame[pos[0] - 2][pos[1] - 1].position);
+                }
+                else if(this.board.gridGame[pos[0] - 2][pos[1] - 1].name.contains("white")){
+                    this.board.gridGame[pos[0] - 2][pos[1] - 1].canBeCaptured = true;
+                    legalMoves.add(this.board.gridGame[pos[0] - 2][pos[1] - 1].position);
+                }
+            } catch (Exception ignored) {}
+
+            try {
+                if(this.board.gridGame[pos[0] + 2][pos[1] - 1].name.isEmpty()){
+                    legalMoves.add(this.board.gridGame[pos[0] + 2][pos[1] - 1].position);
+                }
+                else if(this.board.gridGame[pos[0] + 2][pos[1] - 1].name.contains("white")){
+                    this.board.gridGame[pos[0] + 2][pos[1] - 1].canBeCaptured = true;
+                    legalMoves.add(this.board.gridGame[pos[0] + 2][pos[1] - 1].position);
+                }
+            } catch (Exception ignored) {}
+            try {
+                if(this.board.gridGame[pos[0] + 2][pos[1] + 1].name.isEmpty()){
+                    legalMoves.add(this.board.gridGame[pos[0] + 2][pos[1] + 1].position);
+                }
+                else if(this.board.gridGame[pos[0] + 2][pos[1] + 1].name.contains("white")){
+                    this.board.gridGame[pos[0] + 2][pos[1] + 1].canBeCaptured = true;
+                    legalMoves.add(this.board.gridGame[pos[0] + 2][pos[1] + 1].position);
+                }
+            } catch (Exception ignored) {}
+        }
+
+        else if(this.name.equals("whiteKnight")){
+            try {
+                if(this.board.gridGame[pos[0] + 1][pos[1] - 2].name.isEmpty()){
+                    legalMoves.add(this.board.gridGame[pos[0] + 1][pos[1] - 2].position);
+                }
+                else if(this.board.gridGame[pos[0] + 1][pos[1] - 2].name.contains("black")){
+                    this.board.gridGame[pos[0] + 1][pos[1] - 2].canBeCaptured = true;
+                    legalMoves.add(this.board.gridGame[pos[0] + 1][pos[1] - 2].position);
+                }
+            } catch (Exception ignored) {}
+            try {
+                if(this.board.gridGame[pos[0] + 1][pos[1] + 2].name.isEmpty()){
+
+                    legalMoves.add(this.board.gridGame[pos[0] + 1][pos[1] + 2].position);
+                }
+                else if(this.board.gridGame[pos[0] + 1][pos[1] + 2].name.contains("black")){
+                    this.board.gridGame[pos[0] + 1][pos[1] + 2].canBeCaptured = true;
+                    legalMoves.add(this.board.gridGame[pos[0] + 1][pos[1] + 2].position);
+                }
+            } catch (Exception ignored) {}
+
+            try {
+                if(this.board.gridGame[pos[0] - 1][pos[1] - 2].name.isEmpty()){
+
+                    legalMoves.add(this.board.gridGame[pos[0] - 1][pos[1] - 2].position);
+                }
+                else if(this.board.gridGame[pos[0] - 1][pos[1] - 2].name.contains("black")){
+                    this.board.gridGame[pos[0] - 1][pos[1] - 2].canBeCaptured = true;
+                    legalMoves.add(this.board.gridGame[pos[0] - 1][pos[1] - 2].position);
+                }
+            } catch (Exception ignored) {}
+            try {
+                if(this.board.gridGame[pos[0] - 1][pos[1] + 2].name.isEmpty()){
+                    legalMoves.add(this.board.gridGame[pos[0] - 1][pos[1] + 2].position);
+                }
+                else if(this.board.gridGame[pos[0] - 1][pos[1] + 2].name.contains("black")){
+                    this.board.gridGame[pos[0] - 1][pos[1] + 2].canBeCaptured = true;
+                    legalMoves.add(this.board.gridGame[pos[0] - 1][pos[1] + 2].position);
+                }
+            } catch (Exception ignored) {}
+
+            try {
+                if(this.board.gridGame[pos[0] - 2][pos[1] + 1].name.isEmpty()){
+                    legalMoves.add(this.board.gridGame[pos[0] - 2][pos[1] + 1].position);
+                }
+                else if(this.board.gridGame[pos[0] - 2][pos[1] + 1].name.contains("black")){
+                    this.board.gridGame[pos[0] - 2][pos[1] + 1].canBeCaptured = true;
+                    legalMoves.add(this.board.gridGame[pos[0] - 2][pos[1] + 1].position);
+                }
+            } catch (Exception ignored) {}
+            try {
+                if(this.board.gridGame[pos[0] - 2][pos[1] - 1].name.isEmpty()){
+                    legalMoves.add(this.board.gridGame[pos[0] - 2][pos[1] - 1].position);
+                }
+                else if(this.board.gridGame[pos[0] - 2][pos[1] - 1].name.contains("black")){
+                    this.board.gridGame[pos[0] - 2][pos[1] - 1].canBeCaptured = true;
+                    legalMoves.add(this.board.gridGame[pos[0] - 2][pos[1] - 1].position);
+                }
+            } catch (Exception ignored) {}
+
+            try {
+                if(this.board.gridGame[pos[0] + 2][pos[1] - 1].name.isEmpty()){
+                    legalMoves.add(this.board.gridGame[pos[0] + 2][pos[1] - 1].position);
+                }
+                else if(this.board.gridGame[pos[0] + 2][pos[1] - 1].name.contains("black")){
+                    this.board.gridGame[pos[0] + 2][pos[1] - 1].canBeCaptured = true;
+                    legalMoves.add(this.board.gridGame[pos[0] + 2][pos[1] - 1].position);
+                }
+            } catch (Exception ignored) {}
+            try {
+                if(this.board.gridGame[pos[0] + 2][pos[1] + 1].name.isEmpty()){
+                    legalMoves.add(this.board.gridGame[pos[0] + 2][pos[1] + 1].position);
+                }
+                else if(this.board.gridGame[pos[0] + 2][pos[1] + 1].name.contains("black")){
+                    this.board.gridGame[pos[0] + 2][pos[1] + 1].canBeCaptured = true;
+                    legalMoves.add(this.board.gridGame[pos[0] + 2][pos[1] + 1].position);
+                }
+            } catch (Exception ignored) {}
+        }
+
         displayLegalMoves(legalMoves);
     }
 
     public void canSwap(){
-        if(!this.name.isEmpty()){
-            legalMoves.clear();
+        //When the tile is not empty
+        if(!this.name.isEmpty() && !this.canBeCaptured){
             innitLegalMoves();
             this.board.chosen = this;
         }
+
+        //When a piece can be Captured
+        else if(this.canBeCaptured){
+            for(String move : legalMoves){
+                if(this.position.equals(move)){
+                    capture(this, this.board.chosen);
+                }
+            }
+        }
+
+        //When the tile is empty
         else{
-            if(!(this.board.chosen == null)){
-                for(String move : legalMoves){
-                    if(this.position.equals(move)){
-                        swap(this, this.board.chosen);
-                    }
+            for(String move : legalMoves){
+                if(this.position.equals(move)){
+                    swap(this.board.chosen, this);
                 }
             }
         }
@@ -149,13 +394,18 @@ public class Pieces {
         p1.name = p2.name;
         p2.name = temp.name;
 
-        temp.position = p1.position;
-        p1.position = p2.position;
-        p2.position = temp.position;
-
         temp.button.setGraphic(p1.button.getGraphic());
         p1.button.setGraphic(p2.button.getGraphic());
         p2.button.setGraphic(temp.button.getGraphic());
+    }
+
+    public void capture(Pieces captured, Pieces capturing){
+        captured.name = capturing.name;
+        capturing.name = "";
+
+        captured.button.setGraphic(capturing.button.getGraphic());
+        capturing.button.setGraphic(null);
+        captured.canBeCaptured = false;
     }
 
 
