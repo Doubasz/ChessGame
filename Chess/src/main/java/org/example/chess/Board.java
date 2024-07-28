@@ -13,6 +13,7 @@ public class Board {
     Pieces[][] gridGame = new Pieces[8][8];
     GridPane grid = new GridPane();
     Pieces chosen;
+    String currentPlayer = "white";
 
 
     public Board(){
@@ -36,10 +37,16 @@ public class Board {
                 grid.add(gridGame[i][j].toNode(), i, j);
             }
         }
-        gridGame[4][1].innitLegalMoves();
     }
 
     public Parent toParent(){
         return this.grid;
     }
+
+    public void changeCurrentPlayer(){
+        if(this.currentPlayer.equals("white")) this.currentPlayer = "black";
+        else this.currentPlayer = "white";
+    }
+
+
 }
