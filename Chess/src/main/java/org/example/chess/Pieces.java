@@ -5,6 +5,8 @@ import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
+import javafx.scene.paint.Color;
 
 import java.security.spec.ECField;
 import java.util.ArrayList;
@@ -19,7 +21,6 @@ public class Pieces {
     private boolean isDame;
     private Board board;
     private boolean isDebut;
-    int nbPieceAhead = 0;
 
 
     public Pieces(){}
@@ -228,69 +229,81 @@ public class Pieces {
                 }
             }
 
-            if(this.name.contains("Bishop")){
-                this.nbPieceAhead = 0;
-                    for(int i = 0; i < 8; i++) {
+            else if(this.name.contains("Bishop")){
                         try {
-                            legalMovesPieces2(pos[0] + i, pos[1] + i);
+                            legalMovesPieces2(pos[0], pos[1], 1, 1);
                         } catch (Exception ignored) {
                         }
-                    }
-                    this.nbPieceAhead = 0;
-                    for(int i = 0; i < 8; i++) {
-
                         try {
-                            legalMovesPieces2(pos[0] - i, pos[1] + i);
+                            legalMovesPieces2(pos[0], pos[1], -1, 1);
                         } catch (Exception ignored) {
                         }
-                    }
-                    this.nbPieceAhead = 0;
-                    for(int i = 0; i < 8; i++) {
-
                         try {
-                            legalMovesPieces2(pos[0] + i, pos[1] - i);
+                            legalMovesPieces2(pos[0], pos[1], 1, -1);
                         } catch (Exception ignored) {
                         }
-                    }
-                    this.nbPieceAhead = 0;
-                    for(int i = 0; i < 8; i++){
                         try {
-                            legalMovesPieces2(pos[0] - i, pos[1] - i);
+                            legalMovesPieces2(pos[0], pos[1], -1, -1);
                         }catch (Exception ignored) {}
-                    }
-                    this.nbPieceAhead = 0;
             }
 
             if(this.name.contains("Rook")){
-                this.nbPieceAhead = 0;
-                for(int i = 0; i < 8; i++) {
                     try {
-                        legalMovesPieces2(pos[0] + i, pos[1]);
+                        legalMovesPieces2(pos[0], pos[1], 1, 0);
                     } catch (Exception ignored) {
                     }
-                }
-                this.nbPieceAhead = 0;
-                for(int i = 0; i < 8; i++) {
+                    try {
+                        legalMovesPieces2(pos[0], pos[1], -1, 0);
+                    } catch (Exception ignored) {
+                    }
 
                     try {
-                        legalMovesPieces2(pos[0] - i, pos[1]);
+                        legalMovesPieces2(pos[0], pos[1], 0, 1);
                     } catch (Exception ignored) {
                     }
-                }
-                this.nbPieceAhead = 0;
-                for(int i = 0; i < 8; i++) {
-                    try {
-                        legalMovesPieces2(pos[0], pos[1] + i);
-                    } catch (Exception ignored) {
-                    }
-                }
-                this.nbPieceAhead = 0;
-                for(int i = 0; i < 8; i++) {
 
                     try {
-                        legalMovesPieces2(pos[0], pos[1] - i);
+                        legalMovesPieces2(pos[0], pos[1], 0, -1);
                     } catch (Exception ignored) {
                     }
+            }
+
+            else if(this.name.contains("Queen")){
+                //Diagonal
+                try {
+                    legalMovesPieces2(pos[0], pos[1], 1, 1);
+                } catch (Exception ignored) {
+                }
+                try {
+                    legalMovesPieces2(pos[0], pos[1], -1, 1);
+                } catch (Exception ignored) {
+                }
+                try {
+                    legalMovesPieces2(pos[0], pos[1], 1, -1);
+                } catch (Exception ignored) {
+                }
+                try {
+                    legalMovesPieces2(pos[0], pos[1], -1, -1);
+                }catch (Exception ignored) {}
+
+                try {
+                    legalMovesPieces2(pos[0], pos[1], 1, 0);
+                } catch (Exception ignored) {
+                }
+                try {
+                    legalMovesPieces2(pos[0], pos[1], -1, 0);
+                } catch (Exception ignored) {
+                }
+
+                //Horizontal
+                try {
+                    legalMovesPieces2(pos[0], pos[1], 0, 1);
+                } catch (Exception ignored) {
+                }
+
+                try {
+                    legalMovesPieces2(pos[0], pos[1], 0, -1);
+                } catch (Exception ignored) {
                 }
             }
         }
@@ -298,8 +311,10 @@ public class Pieces {
     }
 
     public void canSwap(){
+
         //When the tile is not empty
         if(!this.name.isEmpty() && !this.canBeCaptured){
+            resetBoard();
             innitLegalMoves();
             this.board.chosen = this;
         }
@@ -313,6 +328,7 @@ public class Pieces {
                 }
             }
             resetCanBeCaptured();
+            resetBoard();
         }
 
         //When the tile is empty
@@ -324,6 +340,7 @@ public class Pieces {
                 }
             }
             legalMoves.clear();
+            resetBoard();
         }
     }
 
@@ -416,8 +433,25 @@ public class Pieces {
     }
 
     public void displayLegalMoves(ArrayList<String> array){
+        //rgb(178,34,34)
+        Color red = new Color(0.698, 0.13333, 0.133333, 1);
+
         for(String arr : array){
-            System.out.println(arr);
+            int[] pos = stringToPos(arr);
+            this.board.gridGame[pos[0]][pos[1]].button.setBackground(Background.fill(red));
+        }
+    }
+
+    public void resetBoard(){
+        Color white = new Color(0.97, 0.84, 0.68, 1);
+        Color black = new Color(0.482, 0.396, 0.286, 1);
+
+        for(int i = 0; i < 8; i++){
+            for(int j = 0; j < 8; j++){
+                if(i % 2 == 1 && j % 2 == 1) this.board.gridGame[i][j].button.setBackground(Background.fill(white));
+                else if(i % 2 == 0 && j % 2 == 0) this.board.gridGame[i][j].button.setBackground(Background.fill(white));
+                else this.board.gridGame[i][j].button.setBackground(Background.fill(black));
+            }
         }
     }
 
@@ -433,22 +467,32 @@ public class Pieces {
         }
     }
 
-    public void legalMovesPieces2(int num1, int num2){
-        if(this.board.gridGame[num1][num2].name.isEmpty()) {
-            legalMoves.add(this.board.gridGame[num1][num2].position);
-        } else if (this.board.gridGame[num1][num2].name.contains("white") && this.name.contains("black")) {
-            if(this.nbPieceAhead < 1)
-            {
-                this.board.gridGame[num1][num2].canBeCaptured = true;
-                legalMoves.add(this.board.gridGame[num1][num2].position);
-                this.nbPieceAhead++;
+    public void legalMovesPieces2(int num1, int num2, int column, int row){
+        int column1 = column;
+        int row1 = row;
+
+        for(int i = 0; i < 8; i++){
+            if(this.board.gridGame[num1 + column1][num2 + row1].name.contains("white") && this.name.contains("white") || this.board.gridGame[num1 + column1][num2 + row1].name.contains("black") && this.name.contains("black")){
+                break;
             }
-        } else if (this.board.gridGame[num1][num2].name.contains("black") && this.name.contains("white")) {
-            if(this.nbPieceAhead < 1){
-                this.board.gridGame[num1][num2].canBeCaptured = true;
-                legalMoves.add(this.board.gridGame[num1][num2].position);
-                this.nbPieceAhead++;
+            else if(this.board.gridGame[num1 + column1][num2 + row1].name.isEmpty()) {
+                legalMoves.add(this.board.gridGame[num1 + column1][num2 + row1].position);
+            } else if (this.board.gridGame[num1 + column1][num2 + row1].name.contains("white") && this.name.contains("black")) {
+                this.board.gridGame[num1 + column1][num2 + row1].canBeCaptured = true;
+                legalMoves.add(this.board.gridGame[num1 + column1][num2 + row1].position);
+                break;
+            } else if (this.board.gridGame[num1 + column1][num2 + row1].name.contains("black") && this.name.contains("white")) {
+                this.board.gridGame[num1 + column1][num2 + row1].canBeCaptured = true;
+                legalMoves.add(this.board.gridGame[num1 + column1][num2 + row1].position);
+                break;
             }
+            if(column1 > 0) column1++;
+            else if(column1 < 0) column1--;
+            else column1 = 0;
+
+            if(row1 > 0) row1++;
+            else if(row1 < 0) row1--;
+            else row1 = 0;
         }
     }
 }
