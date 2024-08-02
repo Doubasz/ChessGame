@@ -21,6 +21,8 @@ public class Pieces {
     private boolean isDame;
     private Board board;
     private boolean isDebut;
+    boolean controlledByBlack;
+    boolean controlledByWhite;
 
 
     public Pieces(){}
@@ -32,6 +34,8 @@ public class Pieces {
         this.button = b;
         this.isDame = dame;
         this.position = posToString(pos);
+        this.controlledByWhite = false;
+        this.controlledByBlack = false;
 
         if(!this.isDame){
             if(this.position.charAt(1) == '7'){
@@ -119,198 +123,82 @@ public class Pieces {
 
         if(this.name.contains(this.board.currentPlayer)) {
 
-
             //Initialising the legal moves of pawns
-            if (this.name.equals("blackPawn")) {
 
-                //Moving forward with a Pawn
-                if (this.isDebut) {
-                    for (int i = 1; i < 3; i++) {
-                        try {
-                            if (this.board.gridGame[pos[0]][pos[1] + i].name.isEmpty()) {
-                                legalMoves.add(this.board.gridGame[pos[0]][pos[1] + i].position);
-                            }
-                        } catch (Exception ignored) {
-                        }
-                    }
-                    this.isDebut = false;
-                } else {
-                    try {
-                        if (this.board.gridGame[pos[0]][pos[1] + 1].name.isEmpty()) {
-                            legalMoves.add(this.board.gridGame[pos[0]][pos[1] + 1].position);
-                        }
-                    } catch (Exception ignored) {
-                    }
+            if(this.name.contains("Pawn")){
+                if(this.name.contains("black")){
+                    legalMovesPawn(pos[0], pos[1] + 1);
                 }
-
-                //Capturing with the Pawn
-                try {
-                    if (!this.board.gridGame[pos[0] + 1][pos[1] + 1].name.isEmpty() && this.board.gridGame[pos[0] + 1][pos[1] + 1].name.contains("white")) {
-                        this.board.gridGame[pos[0] + 1][pos[1] + 1].canBeCaptured = true;
-                        legalMoves.add(this.board.gridGame[pos[0] + 1][pos[1] + 1].position);
-                    }
-                    if (!this.board.gridGame[pos[0] - 1][pos[1] + 1].name.isEmpty() && this.board.gridGame[pos[0] - 1][pos[1] + 1].name.contains("white")) {
-                        this.board.gridGame[pos[0] - 1][pos[1] + 1].canBeCaptured = true;
-                        legalMoves.add(this.board.gridGame[pos[0] - 1][pos[1] + 1].position);
-                    }
-                } catch (Exception ignored) {
-                }
-
-            } else if (this.name.equals("whitePawn")) {
-
-                //Moving forward with a Pawn
-                if (this.isDebut) {
-                    for (int i = 1; i < 3; i++) {
-                        pos = stringToPos(this.position);
-                        try {
-                            if (this.board.gridGame[pos[0]][pos[1] - i].name.isEmpty()) {
-                                legalMoves.add(this.board.gridGame[pos[0]][pos[1] - i].position);
-                            }
-                        } catch (Exception ignored) {
-                        }
-                    }
-                    this.isDebut = false;
-                } else {
-                    pos = stringToPos(this.position);
-                    try {
-                        if (this.board.gridGame[pos[0]][pos[1] - 1].name.isEmpty()) {
-                            legalMoves.add(this.board.gridGame[pos[0]][pos[1] - 1].position);
-                        }
-                    } catch (Exception ignored) {
-                    }
-                }
-
-                //Capturing with the pawn
-                try {
-                    if (!this.board.gridGame[pos[0] - 1][pos[1] - 1].name.isEmpty() && this.board.gridGame[pos[0] - 1][pos[1] - 1].name.contains("black")) {
-                        this.board.gridGame[pos[0] - 1][pos[1] - 1].canBeCaptured = true;
-                        legalMoves.add(this.board.gridGame[pos[0] - 1][pos[1] - 1].position);
-                    }
-                } catch (Exception ignored) {
-                }
-                try {
-                    if (!this.board.gridGame[pos[0] + 1][pos[1] - 1].name.isEmpty() && this.board.gridGame[pos[0] + 1][pos[1] - 1].name.contains("black")) {
-                        this.board.gridGame[pos[0] + 1][pos[1] - 1].canBeCaptured = true;
-                        legalMoves.add(this.board.gridGame[pos[0] + 1][pos[1] - 1].position);
-                    }
-                } catch (Exception ignored) {
+                else if(this.name.contains("white")){
+                    legalMovesPawn(pos[0], pos[1] - 1);
                 }
             }
 
             //Initializing the moves of knights
 
-            else if (this.name.contains("Knight")) {
-                try {
-                    legalMovesPieces(pos[0] + 1, pos[1] - 2);
-                } catch (Exception ignored) {}
-                try {
-                    legalMovesPieces(pos[0] + 1, pos[1] + 2);
-                } catch (Exception ignored) {}
-                try {
-                    legalMovesPieces(pos[0] - 1, pos[1] - 2);
-                } catch (Exception ignored) {}
-                try {
-                    legalMovesPieces(pos[0] - 1, pos[1] + 2);
-                } catch (Exception ignored) {}
-                try {
-                    legalMovesPieces(pos[0] - 2, pos[1] + 1);
-                } catch (Exception ignored) {
-                }
-                try {
-                    legalMovesPieces(pos[0] - 2, pos[1] - 1);
-                } catch (Exception ignored) {}
-                try {
-                    legalMovesPieces(pos[0] + 2, pos[1] - 1);
-                } catch (Exception ignored) {
-                }
-                try {
-                    legalMovesPieces(pos[0] + 2, pos[1] + 1);
-                } catch (Exception ignored) {
-                }
+            if (this.name.contains("Knight")) {
+
+                legalMovesPieces(pos[0] + 1, pos[1] - 2);
+                legalMovesPieces(pos[0] + 1, pos[1] + 2);
+                legalMovesPieces(pos[0] - 1, pos[1] - 2);
+                legalMovesPieces(pos[0] - 1, pos[1] + 2);
+                legalMovesPieces(pos[0] - 2, pos[1] + 1);
+                legalMovesPieces(pos[0] - 2, pos[1] - 1);
+                legalMovesPieces(pos[0] + 2, pos[1] - 1);
+                legalMovesPieces(pos[0] + 2, pos[1] + 1);
             }
 
-            else if(this.name.contains("Bishop")){
-                        try {
-                            legalMovesPieces2(pos[0], pos[1], 1, 1);
-                        } catch (Exception ignored) {
-                        }
-                        try {
-                            legalMovesPieces2(pos[0], pos[1], -1, 1);
-                        } catch (Exception ignored) {
-                        }
-                        try {
-                            legalMovesPieces2(pos[0], pos[1], 1, -1);
-                        } catch (Exception ignored) {
-                        }
-                        try {
-                            legalMovesPieces2(pos[0], pos[1], -1, -1);
-                        }catch (Exception ignored) {}
+            else if(this.name.contains("Bishop")) {
+
+                legalMovesPieces(pos[0], pos[1], 1, 1);
+                legalMovesPieces(pos[0], pos[1], -1, 1);
+                legalMovesPieces(pos[0], pos[1], 1, -1);
+                legalMovesPieces(pos[0], pos[1], -1, -1);
             }
 
-            if(this.name.contains("Rook")){
-                    try {
-                        legalMovesPieces2(pos[0], pos[1], 1, 0);
-                    } catch (Exception ignored) {
-                    }
-                    try {
-                        legalMovesPieces2(pos[0], pos[1], -1, 0);
-                    } catch (Exception ignored) {
-                    }
+            else if(this.name.contains("Rook")) {
 
-                    try {
-                        legalMovesPieces2(pos[0], pos[1], 0, 1);
-                    } catch (Exception ignored) {
-                    }
-
-                    try {
-                        legalMovesPieces2(pos[0], pos[1], 0, -1);
-                    } catch (Exception ignored) {
-                    }
+                legalMovesPieces(pos[0], pos[1], 1, 0);
+                legalMovesPieces(pos[0], pos[1], -1, 0);
+                legalMovesPieces(pos[0], pos[1], 0, 1);
+                legalMovesPieces(pos[0], pos[1], 0, -1);
             }
 
-            else if(this.name.contains("Queen")){
+            else if(this.name.contains("Queen")) {
                 //Diagonal
-                try {
-                    legalMovesPieces2(pos[0], pos[1], 1, 1);
-                } catch (Exception ignored) {
-                }
-                try {
-                    legalMovesPieces2(pos[0], pos[1], -1, 1);
-                } catch (Exception ignored) {
-                }
-                try {
-                    legalMovesPieces2(pos[0], pos[1], 1, -1);
-                } catch (Exception ignored) {
-                }
-                try {
-                    legalMovesPieces2(pos[0], pos[1], -1, -1);
-                }catch (Exception ignored) {}
-
-                try {
-                    legalMovesPieces2(pos[0], pos[1], 1, 0);
-                } catch (Exception ignored) {
-                }
-                try {
-                    legalMovesPieces2(pos[0], pos[1], -1, 0);
-                } catch (Exception ignored) {
-                }
+                legalMovesPieces(pos[0], pos[1], 1, 1);
+                legalMovesPieces(pos[0], pos[1], -1, 1);
+                legalMovesPieces(pos[0], pos[1], 1, -1);
+                legalMovesPieces(pos[0], pos[1], -1, -1);
 
                 //Horizontal
-                try {
-                    legalMovesPieces2(pos[0], pos[1], 0, 1);
-                } catch (Exception ignored) {
-                }
+                legalMovesPieces(pos[0], pos[1], 1, 0);
+                legalMovesPieces(pos[0], pos[1], -1, 0);
+                legalMovesPieces(pos[0], pos[1], 0, 1);
+                legalMovesPieces(pos[0], pos[1], 0, -1);
+            }
 
-                try {
-                    legalMovesPieces2(pos[0], pos[1], 0, -1);
-                } catch (Exception ignored) {
-                }
+            else if(this.name.contains("King")){
+                //Diagonal
+                legalMovesPieces(pos[0] + 1, pos[1] + 1);
+                legalMovesPieces(pos[0] + 1, pos[1] - 1);
+                legalMovesPieces(pos[0] - 1, pos[1] + 1);
+                legalMovesPieces(pos[0] - 1, pos[1] -1);
+
+                //Horizontal
+                legalMovesPieces(pos[0] + 1, pos[1]);
+                legalMovesPieces(pos[0] - 1, pos[1]);
+                legalMovesPieces(pos[0], pos[1] + 1);
+                legalMovesPieces(pos[0], pos[1] - 1);
             }
         }
         displayLegalMoves(legalMoves);
     }
 
     public void canSwap(){
+        if(this.name.contains("King")){
+            innitControlled();
+        }
 
         //When the tile is not empty
         if(!this.name.isEmpty() && !this.canBeCaptured){
@@ -327,6 +215,7 @@ public class Pieces {
                     this.board.changeCurrentPlayer();
                 }
             }
+            resetControlled();
             resetCanBeCaptured();
             resetBoard();
         }
@@ -339,6 +228,7 @@ public class Pieces {
                     this.board.changeCurrentPlayer();
                 }
             }
+            resetControlled();
             legalMoves.clear();
             resetBoard();
         }
@@ -375,6 +265,133 @@ public class Pieces {
         }
     }
 
+    public void innitControlled(){
+
+        for(int i = 0; i < this.board.gridGame.length; i++){
+            for(int j = 0; j < this.board.gridGame[0].length; j++){
+                if(!this.board.gridGame[i][j].name.isEmpty()){
+                    int[] pos = stringToPos(this.board.gridGame[i][j].position);
+                    String name = this.board.gridGame[i][j].name;
+
+                    if(this.board.gridGame[i][j].name.contains("Knight")){
+                        defineControlled(name, pos[0] + 1, pos[1] - 2);
+                        defineControlled(name, pos[0] + 1, pos[1] + 2);
+                        defineControlled(name, pos[0] - 1, pos[1] - 2);
+                        defineControlled(name, pos[0] - 1, pos[1] + 2);
+                        defineControlled(name, pos[0] - 2, pos[1] + 1);
+                        defineControlled(name, pos[0] - 2, pos[1] - 1);
+                        defineControlled(name,pos[0] + 2, pos[1] - 1);
+                        defineControlled(name,pos[0] + 2, pos[1] + 1);
+                    }
+                    else if(this.board.gridGame[i][j].name.contains("Bishop")){
+                        defineControlled(name, pos[0], pos[1], 1, 1);
+                        defineControlled(name, pos[0], pos[1], -1, 1);
+                        defineControlled(name, pos[0], pos[1], 1, -1);
+                        defineControlled(name, pos[0], pos[1], -1, -1);
+                    }
+
+                    else if(this.board.gridGame[i][j].name.contains("Rook")) {
+
+                        defineControlled(name, pos[0], pos[1], 1, 0);
+                        defineControlled(name, pos[0], pos[1], -1, 0);
+                        defineControlled(name, pos[0], pos[1], 0, 1);
+                        defineControlled(name, pos[0], pos[1], 0, -1);
+                    }
+
+                    else if(this.board.gridGame[i][j].name.contains("Queen")) {
+                        //Diagonal
+                        defineControlled(name, pos[0], pos[1], 1, 1);
+                        defineControlled(name, pos[0], pos[1], -1, 1);
+                        defineControlled(name, pos[0], pos[1], 1, -1);
+                        defineControlled(name, pos[0], pos[1], -1, -1);
+
+                        //Horizontal
+                        defineControlled(name, pos[0], pos[1], 1, 0);
+                        defineControlled(name, pos[0], pos[1], -1, 0);
+                        defineControlled(name, pos[0], pos[1], 0, 1);
+                        defineControlled(name, pos[0], pos[1], 0, -1);
+                    }
+
+                    else if(this.board.gridGame[i][j].name.contains("King")){
+                        //Diagonal
+                        defineControlled(name, pos[0] + 1, pos[1] + 1);
+                        defineControlled(name, pos[0] + 1, pos[1] - 1);
+                        defineControlled(name, pos[0] - 1, pos[1] + 1);
+                        defineControlled(name, pos[0] - 1, pos[1] -1);
+
+                        //Horizontal
+                        defineControlled(name, pos[0] + 1, pos[1]);
+                        defineControlled(name, pos[0] - 1, pos[1]);
+                        defineControlled(name, pos[0], pos[1] + 1);
+                        defineControlled(name, pos[0], pos[1] - 1);
+                    }
+                }
+            }
+        }
+    }
+
+    public void defineControlled(String name, int num1, int num2){
+        try{
+            if(this.board.gridGame[num1][num2].name.isEmpty()){
+                if(name.contains("white")){
+                    this.board.gridGame[num1][num2].controlledByWhite = true;
+                }
+                else if(name.contains("black")){
+                    this.board.gridGame[num1][num2].controlledByBlack = true;
+                }
+            }
+
+            if(this.board.gridGame[num1][num2].name.contains("black") && name.contains("white")) {
+                this.board.gridGame[num1][num2].controlledByWhite = true;
+            }
+            if (this.board.gridGame[num1][num2].name.contains("white") && name.contains("black")) {
+                this.board.gridGame[num1][num2].controlledByBlack = true;
+            }
+        } catch(Exception ignored) {}
+    }
+
+    public void defineControlled(String name, int num1, int num2, int column, int row){
+        int column1 = column;
+        int row1 = row;
+
+        try {
+            for (int i = 0; i < 8; i++) {
+                if (this.board.gridGame[num1 + column1][num2 + row1].name.contains("white") && name.contains("white") || this.board.gridGame[num1 + column1][num2 + row1].name.contains("black") && name.contains("black")) {
+                    break;
+                }
+                if(this.board.gridGame[num1 + column1][num2 + row1].name.isEmpty() && name.contains("white")){
+                    this.board.gridGame[num1 + column1][num2 + row1].controlledByWhite = true;
+                }
+                else if(this.board.gridGame[num1 + column1][num2 + row1].name.isEmpty() && name.contains("black")){
+                    this.board.gridGame[num1 + column1][num2 + row1].controlledByBlack = true;
+                }
+                else if (this.board.gridGame[num1 + column1][num2 + row1].name.contains("white") && name.contains("black")) {
+                    this.board.gridGame[num1 + column1][num2 + row1].controlledByBlack = true;
+                    break;
+                } else if (this.board.gridGame[num1 + column1][num2 + row1].name.contains("black") && name.contains("white")) {
+                    this.board.gridGame[num1 + column1][num2 + row1].controlledByWhite = true;
+                    break;
+                }
+                if (column1 > 0) column1++;
+                else if (column1 < 0) column1--;
+                else column1 = 0;
+
+                if (row1 > 0) row1++;
+                else if (row1 < 0) row1--;
+                else row1 = 0;
+            }
+        } catch (Exception ignored) {
+        }
+    }
+
+    public void resetControlled(){
+        for(int i = 0; i < this.board.gridGame.length; i++){
+            for(int j = 0; j < this.board.gridGame[0].length; j++){
+                this.board.gridGame[i][j].controlledByBlack = false;
+                this.board.gridGame[i][j].controlledByWhite = false;
+            }
+        }
+    }
 
     public Node toNode(){
         return this.button;
@@ -455,44 +472,82 @@ public class Pieces {
         }
     }
 
-    public void legalMovesPieces(int num1, int num2){
-        if (this.board.gridGame[num1][num2].name.isEmpty()) {
-            legalMoves.add(this.board.gridGame[num1][num2].position);
-        } else if (this.board.gridGame[num1][num2].name.contains("white") && this.name.contains("black")) {
-            this.board.gridGame[num1][num2].canBeCaptured = true;
-            legalMoves.add(this.board.gridGame[num1][num2].position);
-        } else if (this.board.gridGame[num1][num2].name.contains("black") && this.name.contains("white")) {
-            this.board.gridGame[num1][num2].canBeCaptured = true;
-            legalMoves.add(this.board.gridGame[num1][num2].position);
+    public void legalMovesPawn(int num1, int num2) {
+        try {
+            if(this.isDebut){
+                if(this.name.contains("black")){
+                    if(this.board.gridGame[num1][num2 + 1].name.isEmpty()) {
+                        legalMoves.add(this.board.gridGame[num1][num2 + 1].position);
+                    }
+                }
+                else if(this.name.contains("white")){
+                    if(this.board.gridGame[num1][num2 - 1].name.isEmpty()) {
+                        legalMoves.add(this.board.gridGame[num1][num2 - 1].position);
+                    }
+                }
+            }
+            if(this.board.gridGame[num1][num2].name.isEmpty()) {
+                legalMoves.add(this.board.gridGame[num1][num2].position);
+            }
+
+
+            if (this.board.gridGame[num1 + 1][num2].name.contains("white") && this.name.contains("black") || this.board.gridGame[num1 + 1][num2].name.contains("black") && this.name.contains("white")) {
+                this.board.gridGame[num1 + 1][num2].canBeCaptured = true;
+                legalMoves.add(this.board.gridGame[num1 + 1][num2].position);
+            }
+            if (this.board.gridGame[num1 - 1][num2].name.contains("white") && this.name.contains("black") || this.board.gridGame[num1 - 1][num2].name.contains("black") && this.name.contains("white")) {
+                this.board.gridGame[num1 - 1][num2].canBeCaptured = true;
+                legalMoves.add(this.board.gridGame[num1 - 1][num2].position);
+            }
+        } catch (Exception ignored) {
         }
     }
 
-    public void legalMovesPieces2(int num1, int num2, int column, int row){
+    public void legalMovesPieces(int num1, int num2){
+        try{
+            if(!(this.name.equals("blackKing") && this.board.gridGame[num1][num2].controlledByWhite))
+            {
+                if (this.board.gridGame[num1][num2].name.isEmpty()) {
+                    legalMoves.add(this.board.gridGame[num1][num2].position);
+                } else if (this.board.gridGame[num1][num2].name.contains("white") && this.name.contains("black")) {
+                    this.board.gridGame[num1][num2].canBeCaptured = true;
+                    legalMoves.add(this.board.gridGame[num1][num2].position);
+                } else if (this.board.gridGame[num1][num2].name.contains("black") && this.name.contains("white")) {
+                    this.board.gridGame[num1][num2].canBeCaptured = true;
+                    legalMoves.add(this.board.gridGame[num1][num2].position);
+                }
+            }
+        }catch(Exception ignored) {}
+    }
+
+    public void legalMovesPieces(int num1, int num2, int column, int row) {
         int column1 = column;
         int row1 = row;
 
-        for(int i = 0; i < 8; i++){
-            if(this.board.gridGame[num1 + column1][num2 + row1].name.contains("white") && this.name.contains("white") || this.board.gridGame[num1 + column1][num2 + row1].name.contains("black") && this.name.contains("black")){
-                break;
-            }
-            else if(this.board.gridGame[num1 + column1][num2 + row1].name.isEmpty()) {
-                legalMoves.add(this.board.gridGame[num1 + column1][num2 + row1].position);
-            } else if (this.board.gridGame[num1 + column1][num2 + row1].name.contains("white") && this.name.contains("black")) {
-                this.board.gridGame[num1 + column1][num2 + row1].canBeCaptured = true;
-                legalMoves.add(this.board.gridGame[num1 + column1][num2 + row1].position);
-                break;
-            } else if (this.board.gridGame[num1 + column1][num2 + row1].name.contains("black") && this.name.contains("white")) {
-                this.board.gridGame[num1 + column1][num2 + row1].canBeCaptured = true;
-                legalMoves.add(this.board.gridGame[num1 + column1][num2 + row1].position);
-                break;
-            }
-            if(column1 > 0) column1++;
-            else if(column1 < 0) column1--;
-            else column1 = 0;
+        try {
+            for (int i = 0; i < 8; i++) {
+                if (this.board.gridGame[num1 + column1][num2 + row1].name.contains("white") && this.name.contains("white") || this.board.gridGame[num1 + column1][num2 + row1].name.contains("black") && this.name.contains("black")) {
+                    break;
+                } else if (this.board.gridGame[num1 + column1][num2 + row1].name.isEmpty()) {
+                    legalMoves.add(this.board.gridGame[num1 + column1][num2 + row1].position);
+                } else if (this.board.gridGame[num1 + column1][num2 + row1].name.contains("white") && this.name.contains("black")) {
+                    this.board.gridGame[num1 + column1][num2 + row1].canBeCaptured = true;
+                    legalMoves.add(this.board.gridGame[num1 + column1][num2 + row1].position);
+                    break;
+                } else if (this.board.gridGame[num1 + column1][num2 + row1].name.contains("black") && this.name.contains("white")) {
+                    this.board.gridGame[num1 + column1][num2 + row1].canBeCaptured = true;
+                    legalMoves.add(this.board.gridGame[num1 + column1][num2 + row1].position);
+                    break;
+                }
+                if (column1 > 0) column1++;
+                else if (column1 < 0) column1--;
+                else column1 = 0;
 
-            if(row1 > 0) row1++;
-            else if(row1 < 0) row1--;
-            else row1 = 0;
+                if (row1 > 0) row1++;
+                else if (row1 < 0) row1--;
+                else row1 = 0;
+            }
+        } catch (Exception ignored) {
         }
     }
 }
