@@ -1,21 +1,19 @@
 package org.example.chess;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.paint.Color;
 
-import java.security.spec.ECField;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Pieces {
     private Button button;
     String name;
     private String position;
-    private static ArrayList<String> legalMoves = new ArrayList<>();
+    private ArrayList<String> legalMoves = new ArrayList<>();
     private boolean canBeCaptured;
     private boolean isAlive;
     private boolean isDame;
@@ -23,7 +21,6 @@ public class Pieces {
     private boolean isDebut;
     boolean controlledByBlack;
     boolean controlledByWhite;
-
 
     public Pieces(){}
 
@@ -39,69 +36,69 @@ public class Pieces {
 
         if(!this.isDame){
             if(this.position.charAt(1) == '7'){
-                ImageView blackPawn = new ImageView(getClass().getResource("img/blackPawn.png").toExternalForm());
+                ImageView blackPawn = new ImageView(Objects.requireNonNull(getClass().getResource("img/blackPawn.png")).toExternalForm());
                 this.name = "blackPawn";
                 this.button.setGraphic(blackPawn);
                 this.isDebut = true;
             }
             else if(this.position.charAt(1) == '2'){
-                ImageView whitePawn = new ImageView(getClass().getResource("img/whitePawn.png").toExternalForm());
+                ImageView whitePawn = new ImageView(Objects.requireNonNull(getClass().getResource("img/whitePawn.png")).toExternalForm());
                 this.name = "whitePawn";
                 this.button.setGraphic(whitePawn);
                 this.isDebut = true;
             }
             else if(this.position.equals("a8") || this.position.equals("h8")){
                 this.name = "blackRook";
-                ImageView blackRook = new ImageView(getClass().getResource("img/blackRook.png").toExternalForm());
+                ImageView blackRook = new ImageView(Objects.requireNonNull(getClass().getResource("img/blackRook.png")).toExternalForm());
                 this.button.setGraphic(blackRook);
             }
             else if(this.position.equals("a1") || this.position.equals("h1")){
                 this.name = "whiteRook";
-                ImageView whiteRook = new ImageView(getClass().getResource("img/whiteRook.png").toExternalForm());
+                ImageView whiteRook = new ImageView(Objects.requireNonNull(getClass().getResource("img/whiteRook.png")).toExternalForm());
                 this.button.setGraphic(whiteRook);
             }
 
             else if(this.position.equals("b8") || this.position.equals("g8")){
                 this.name = "blackKnight";
-                ImageView blackKnight = new ImageView(getClass().getResource("img/blackKnight.png").toExternalForm());
+                ImageView blackKnight = new ImageView(Objects.requireNonNull(getClass().getResource("img/blackKnight.png")).toExternalForm());
                 this.button.setGraphic(blackKnight);
             }
             else if(this.position.equals("b1") || this.position.equals("g1")) {
                 this.name = "whiteKnight";
-                ImageView whiteKnight = new ImageView(getClass().getResource("img/whiteKnight.png").toExternalForm());
+                ImageView whiteKnight = new ImageView(Objects.requireNonNull(getClass().getResource("img/whiteKnight.png")).toExternalForm());
                 this.button.setGraphic(whiteKnight);
             }
 
             else if(this.position.equals("c8") || this.position.equals("f8")){
                 this.name = "blackBishop";
-                ImageView blackBishop = new ImageView(getClass().getResource("img/blackBishop.png").toExternalForm());
+                ImageView blackBishop = new ImageView(Objects.requireNonNull(getClass().getResource("img/blackBishop.png")).toExternalForm());
                 this.button.setGraphic(blackBishop);
             }
             else if(this.position.equals("c1") || this.position.equals("f1")){
                 this.name = "whiteBishop";
-                ImageView whiteBishop = new ImageView(getClass().getResource("img/whiteBishop.png").toExternalForm());
+                ImageView whiteBishop = new ImageView(Objects.requireNonNull(getClass().getResource("img/whiteBishop.png")).toExternalForm());
                 this.button.setGraphic(whiteBishop);
             }
 
             else if(this.position.equals("d8")){
                 this.name = "blackQueen";
-                ImageView blackQueen = new ImageView(getClass().getResource("img/blackQueen.png").toExternalForm());
+                ImageView blackQueen = new ImageView(Objects.requireNonNull(getClass().getResource("img/blackQueen.png")).toExternalForm());
                 this.button.setGraphic(blackQueen);
             }
             else if(this.position.equals("d1")){
                 this.name = "whiteQueen";
-                ImageView whiteQueen = new ImageView(getClass().getResource("img/whiteQueen.png").toExternalForm());
+                ImageView whiteQueen = new ImageView(Objects.requireNonNull(getClass().getResource("img/whiteQueen.png")).toExternalForm());
                 this.button.setGraphic(whiteQueen);
             }
 
             else if(this.position.equals("e8")){
                 this.name = "blackKing";
-                ImageView blackKing = new ImageView(getClass().getResource("img/blackKing.png").toExternalForm());
+                ImageView blackKing = new ImageView(Objects.requireNonNull(getClass().getResource("img/blackKing.png")).toExternalForm());
                 this.button.setGraphic(blackKing);
             }
             else if(this.position.equals("e1")){
                 this.name = "whiteKing";
-                ImageView whiteKing = new ImageView(getClass().getResource("img/whiteKing.png").toExternalForm());
+                ImageView whiteKing = new ImageView(Objects.requireNonNull(getClass().getResource("img/whiteKing.png")).toExternalForm());
                 this.button.setGraphic(whiteKing);
             }
             else{
@@ -109,16 +106,11 @@ public class Pieces {
             }
         }
 
-        this.button.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                canSwap();
-            }
-        });
+        this.button.setOnAction(actionEvent -> canSwap());
     }
 
     public void innitLegalMoves(){
-        legalMoves.clear();
+        this.legalMoves.clear();
         int[] pos = stringToPos(this.position);
 
         if(this.name.contains(this.board.currentPlayer)) {
@@ -192,7 +184,7 @@ public class Pieces {
                 legalMovesPieces(pos[0], pos[1] - 1);
             }
         }
-        displayLegalMoves(legalMoves);
+        displayLegalMoves(this.legalMoves);
     }
 
     public void canSwap(){
@@ -209,27 +201,25 @@ public class Pieces {
 
         //When a piece can be Captured
         else if(this.canBeCaptured){
-            for(String move : legalMoves){
+            for(String move : this.board.chosen.legalMoves){
                 if(this.position.equals(move)){
                     capture(this, this.board.chosen);
                     this.board.changeCurrentPlayer();
                 }
             }
-            resetControlled();
-            resetCanBeCaptured();
+            reset();
             resetBoard();
         }
 
         //When the tile is empty
         else{
-            for(String move : legalMoves){
+            for(String move : this.board.chosen.legalMoves){
                 if(this.position.equals(move)){
                     swap(this.board.chosen, this);
                     this.board.changeCurrentPlayer();
                 }
             }
-            resetControlled();
-            legalMoves.clear();
+            reset();
             resetBoard();
         }
     }
@@ -257,13 +247,6 @@ public class Pieces {
         captured.canBeCaptured = false;
     }
 
-    public void resetCanBeCaptured(){
-        for(int i = 0; i < this.board.gridGame.length; i++){
-            for(int j = 0; j < this.board.gridGame[0].length; j++){
-                this.board.gridGame[i][j].canBeCaptured = false;
-            }
-        }
-    }
 
     public void innitControlled(){
 
@@ -273,7 +256,11 @@ public class Pieces {
                     int[] pos = stringToPos(this.board.gridGame[i][j].position);
                     String name = this.board.gridGame[i][j].name;
 
-                    if(this.board.gridGame[i][j].name.contains("Knight")){
+                    if(this.board.gridGame[i][j].name.contains("Pawn")){
+                        defineControlledPawn(name, pos[0], pos[1]);
+                    }
+
+                    else if(this.board.gridGame[i][j].name.contains("Knight")){
                         defineControlled(name, pos[0] + 1, pos[1] - 2);
                         defineControlled(name, pos[0] + 1, pos[1] + 2);
                         defineControlled(name, pos[0] - 1, pos[1] - 2);
@@ -330,6 +317,19 @@ public class Pieces {
         }
     }
 
+    public void defineControlledPawn(String name, int num1, int num2){
+        try{
+            if (name.contains("black")) {
+                this.board.gridGame[num1 + 1][num2 + 1].controlledByBlack = true;
+                this.board.gridGame[num1 - 1][num2 + 1].controlledByBlack = true;
+            }
+            if (name.contains("white")){
+                this.board.gridGame[num1 + 1][num2 - 1].controlledByWhite = true;
+                this.board.gridGame[num1 - 1][num2 - 1].controlledByWhite = true;
+            }
+        } catch(Exception ignored) {}
+    }
+
     public void defineControlled(String name, int num1, int num2){
         try{
             if(this.board.gridGame[num1][num2].name.isEmpty()){
@@ -374,19 +374,18 @@ public class Pieces {
                 }
                 if (column1 > 0) column1++;
                 else if (column1 < 0) column1--;
-                else column1 = 0;
 
                 if (row1 > 0) row1++;
                 else if (row1 < 0) row1--;
-                else row1 = 0;
             }
         } catch (Exception ignored) {
         }
     }
 
-    public void resetControlled(){
+    public void reset(){
         for(int i = 0; i < this.board.gridGame.length; i++){
             for(int j = 0; j < this.board.gridGame[0].length; j++){
+                this.board.gridGame[i][j].canBeCaptured = false;
                 this.board.gridGame[i][j].controlledByBlack = false;
                 this.board.gridGame[i][j].controlledByWhite = false;
             }
@@ -472,49 +471,61 @@ public class Pieces {
         }
     }
 
+
     public void legalMovesPawn(int num1, int num2) {
         try {
             if(this.isDebut){
                 if(this.name.contains("black")){
                     if(this.board.gridGame[num1][num2 + 1].name.isEmpty()) {
-                        legalMoves.add(this.board.gridGame[num1][num2 + 1].position);
+                        this.legalMoves.add(this.board.gridGame[num1][num2 + 1].position);
                     }
                 }
                 else if(this.name.contains("white")){
                     if(this.board.gridGame[num1][num2 - 1].name.isEmpty()) {
-                        legalMoves.add(this.board.gridGame[num1][num2 - 1].position);
+                        this.legalMoves.add(this.board.gridGame[num1][num2 - 1].position);
                     }
                 }
             }
             if(this.board.gridGame[num1][num2].name.isEmpty()) {
-                legalMoves.add(this.board.gridGame[num1][num2].position);
+                this.legalMoves.add(this.board.gridGame[num1][num2].position);
             }
 
+            if(!this.board.gridGame[num1 + 1][num2].name.contains("King")) {
+                if (this.board.gridGame[num1 + 1][num2].name.contains("white") && this.name.contains("black") || this.board.gridGame[num1 + 1][num2].name.contains("black") && this.name.contains("white")) {
+                    this.board.gridGame[num1 + 1][num2].canBeCaptured = true;
+                    this.legalMoves.add(this.board.gridGame[num1 + 1][num2].position);
+                }
+            }
+            if(!this.board.gridGame[num1 - 1][num2].name.contains("King")){
+                if (this.board.gridGame[num1 - 1][num2].name.contains("white") && this.name.contains("black") || this.board.gridGame[num1 - 1][num2].name.contains("black") && this.name.contains("white")) {
+                    this.board.gridGame[num1 - 1][num2].canBeCaptured = true;
+                    this.legalMoves.add(this.board.gridGame[num1 - 1][num2].position);
+                }
+            }
 
-            if (this.board.gridGame[num1 + 1][num2].name.contains("white") && this.name.contains("black") || this.board.gridGame[num1 + 1][num2].name.contains("black") && this.name.contains("white")) {
-                this.board.gridGame[num1 + 1][num2].canBeCaptured = true;
-                legalMoves.add(this.board.gridGame[num1 + 1][num2].position);
-            }
-            if (this.board.gridGame[num1 - 1][num2].name.contains("white") && this.name.contains("black") || this.board.gridGame[num1 - 1][num2].name.contains("black") && this.name.contains("white")) {
-                this.board.gridGame[num1 - 1][num2].canBeCaptured = true;
-                legalMoves.add(this.board.gridGame[num1 - 1][num2].position);
-            }
         } catch (Exception ignored) {
         }
     }
 
     public void legalMovesPieces(int num1, int num2){
         try{
-            if(!(this.name.equals("blackKing") && this.board.gridGame[num1][num2].controlledByWhite))
+            if(!(this.name.equals("blackKing") && this.board.gridGame[num1][num2].controlledByWhite) && !(this.name.equals("whiteKing") && this.board.gridGame[num1][num2].controlledByBlack))
             {
                 if (this.board.gridGame[num1][num2].name.isEmpty()) {
-                    legalMoves.add(this.board.gridGame[num1][num2].position);
-                } else if (this.board.gridGame[num1][num2].name.contains("white") && this.name.contains("black")) {
-                    this.board.gridGame[num1][num2].canBeCaptured = true;
-                    legalMoves.add(this.board.gridGame[num1][num2].position);
-                } else if (this.board.gridGame[num1][num2].name.contains("black") && this.name.contains("white")) {
-                    this.board.gridGame[num1][num2].canBeCaptured = true;
-                    legalMoves.add(this.board.gridGame[num1][num2].position);
+                    this.legalMoves.add(this.board.gridGame[num1][num2].position);
+                }
+                if(!(isProtected(this.board.gridGame[num1][num2]) && this.name.contains("King")))
+                {
+                    if(!this.board.gridGame[num1][num2].name.contains("King")){
+                        if (this.board.gridGame[num1][num2].name.contains("white") && this.name.contains("black")) {
+                            this.board.gridGame[num1][num2].canBeCaptured = true;
+                            this.legalMoves.add(this.board.gridGame[num1][num2].position);
+                        }
+                        else if (this.board.gridGame[num1][num2].name.contains("black") && this.name.contains("white")) {
+                            this.board.gridGame[num1][num2].canBeCaptured = true;
+                            this.legalMoves.add(this.board.gridGame[num1][num2].position);
+                        }
+                    }
                 }
             }
         }catch(Exception ignored) {}
@@ -528,26 +539,43 @@ public class Pieces {
             for (int i = 0; i < 8; i++) {
                 if (this.board.gridGame[num1 + column1][num2 + row1].name.contains("white") && this.name.contains("white") || this.board.gridGame[num1 + column1][num2 + row1].name.contains("black") && this.name.contains("black")) {
                     break;
-                } else if (this.board.gridGame[num1 + column1][num2 + row1].name.isEmpty()) {
-                    legalMoves.add(this.board.gridGame[num1 + column1][num2 + row1].position);
-                } else if (this.board.gridGame[num1 + column1][num2 + row1].name.contains("white") && this.name.contains("black")) {
-                    this.board.gridGame[num1 + column1][num2 + row1].canBeCaptured = true;
-                    legalMoves.add(this.board.gridGame[num1 + column1][num2 + row1].position);
-                    break;
-                } else if (this.board.gridGame[num1 + column1][num2 + row1].name.contains("black") && this.name.contains("white")) {
-                    this.board.gridGame[num1 + column1][num2 + row1].canBeCaptured = true;
-                    legalMoves.add(this.board.gridGame[num1 + column1][num2 + row1].position);
-                    break;
                 }
+                else if (this.board.gridGame[num1 + column1][num2 + row1].name.isEmpty()) {
+                    this.legalMoves.add(this.board.gridGame[num1 + column1][num2 + row1].position);
+                }
+
+                if(!this.board.gridGame[num1 + column1][num2 + row1].name.contains("King")){
+                    if (this.board.gridGame[num1 + column1][num2 + row1].name.contains("white") && this.name.contains("black")) {
+                        this.board.gridGame[num1 + column1][num2 + row1].canBeCaptured = true;
+                        this.legalMoves.add(this.board.gridGame[num1 + column1][num2 + row1].position);
+                        break;
+                    } else if (this.board.gridGame[num1 + column1][num2 + row1].name.contains("black") && this.name.contains("white")) {
+                        this.board.gridGame[num1 + column1][num2 + row1].canBeCaptured = true;
+                        this.legalMoves.add(this.board.gridGame[num1 + column1][num2 + row1].position);
+                        break;
+                    }
+                }
+
                 if (column1 > 0) column1++;
                 else if (column1 < 0) column1--;
-                else column1 = 0;
 
                 if (row1 > 0) row1++;
                 else if (row1 < 0) row1--;
-                else row1 = 0;
             }
         } catch (Exception ignored) {
         }
+    }
+
+    public boolean isProtected(Pieces piece){
+        for(int i = 0; i < 8; i++){
+            for(int j = 0; j < 8; j++){
+                for(String arr : this.board.gridGame[i][j].legalMoves){
+                    if(arr.equals(piece.position) && ((piece.name.contains("black") && this.board.gridGame[i][j].name.contains("black")) || (piece.name.contains("white") && this.board.gridGame[i][j].name.contains("white")))){
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 }
