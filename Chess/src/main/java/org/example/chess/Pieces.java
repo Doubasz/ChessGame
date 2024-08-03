@@ -23,6 +23,13 @@ public class Pieces {
     boolean controlledByWhite;
     boolean neverMoved;
 
+    //TODO make so that the king cant capture a protected piece
+    //TODO make so that a piece cant move if it lead to the king being in check (no idea how to do it)
+    //TODO implement checks and making so that the only legal moves remove the check
+    //TODO implement checkmate
+    //TODO Store games in a text file for data
+    //TODO improve the GUI
+
     public Pieces() {
     }
 
@@ -166,7 +173,73 @@ public class Pieces {
                 legalMovesKing(pos[0], pos[1] - 1);
             }
         }
-        displayLegalMoves(this.legalMoves);
+    }
+
+    public void innitLegalAllMoves() {
+        this.legalMoves.clear();
+        int[] pos = stringToPos(this.position);
+
+
+        //Initialising the legal moves of pawns
+
+        if (this.name.contains("Pawn")) {
+            if (this.name.contains("black")) {
+                legalMovesPawn(pos[0], pos[1] + 1);
+            } else if (this.name.contains("white")) {
+                legalMovesPawn(pos[0], pos[1] - 1);
+            }
+        }
+
+        //Initializing the moves of knights
+
+        if (this.name.contains("Knight")) {
+
+            legalMovesKnight(pos[0] + 1, pos[1] - 2);
+            legalMovesKnight(pos[0] + 1, pos[1] + 2);
+            legalMovesKnight(pos[0] - 1, pos[1] - 2);
+            legalMovesKnight(pos[0] - 1, pos[1] + 2);
+            legalMovesKnight(pos[0] - 2, pos[1] + 1);
+            legalMovesKnight(pos[0] - 2, pos[1] - 1);
+            legalMovesKnight(pos[0] + 2, pos[1] - 1);
+            legalMovesKnight(pos[0] + 2, pos[1] + 1);
+        } else if (this.name.contains("Bishop")) {
+
+            legalMovesPieces(pos[0], pos[1], 1, 1);
+            legalMovesPieces(pos[0], pos[1], -1, 1);
+            legalMovesPieces(pos[0], pos[1], 1, -1);
+            legalMovesPieces(pos[0], pos[1], -1, -1);
+        } else if (this.name.contains("Rook")) {
+
+            legalMovesPieces(pos[0], pos[1], 1, 0);
+            legalMovesPieces(pos[0], pos[1], -1, 0);
+            legalMovesPieces(pos[0], pos[1], 0, 1);
+            legalMovesPieces(pos[0], pos[1], 0, -1);
+        } else if (this.name.contains("Queen")) {
+            //Diagonal
+            legalMovesPieces(pos[0], pos[1], 1, 1);
+            legalMovesPieces(pos[0], pos[1], -1, 1);
+            legalMovesPieces(pos[0], pos[1], 1, -1);
+            legalMovesPieces(pos[0], pos[1], -1, -1);
+
+            //Horizontal
+            legalMovesPieces(pos[0], pos[1], 1, 0);
+            legalMovesPieces(pos[0], pos[1], -1, 0);
+            legalMovesPieces(pos[0], pos[1], 0, 1);
+            legalMovesPieces(pos[0], pos[1], 0, -1);
+        } else if (this.name.contains("King")) {
+            //Diagonal
+            legalMovesKing(pos[0] + 1, pos[1] + 1);
+            legalMovesKing(pos[0] + 1, pos[1] - 1);
+            legalMovesKing(pos[0] - 1, pos[1] + 1);
+            legalMovesKing(pos[0] - 1, pos[1] - 1);
+
+            //Horizontal
+            legalMovesKing(pos[0] + 1, pos[1]);
+            legalMovesKing(pos[0] - 1, pos[1]);
+            legalMovesKing(pos[0], pos[1] + 1);
+            legalMovesKing(pos[0], pos[1] - 1);
+        }
+
     }
 
     public void canSwap() {
@@ -178,6 +251,7 @@ public class Pieces {
         if (!this.name.isEmpty() && !this.canBeCaptured) {
             resetBoard();
             innitLegalMoves();
+            displayLegalMoves(this.legalMoves);
             this.board.chosen = this;
         }
 
@@ -403,6 +477,7 @@ public class Pieces {
 
     public int[] stringToPos(String position) {
         int[] pos = new int[2];
+
         switch (position.charAt(0)) {
             case 'a' -> pos[0] = 0;
             case 'b' -> pos[0] = 1;
@@ -424,6 +499,7 @@ public class Pieces {
             case '2' -> pos[1] = 6;
             case '1' -> pos[1] = 7;
         }
+
         return pos;
     }
 
@@ -431,10 +507,15 @@ public class Pieces {
         //rgb(178,34,34)
         Color red = new Color(0.698, 0.13333, 0.133333, 1);
 
-        for (String arr : array) {
-            int[] pos = stringToPos(arr);
-            this.board.gridGame[pos[0]][pos[1]].button.setBackground(Background.fill(red));
-        }
+        try{
+            for (String arr : array) {
+                if(!arr.contains("Protected")){
+                    int[] pos = stringToPos(arr);
+                    this.board.gridGame[pos[0]][pos[1]].button.setBackground(Background.fill(red));
+                }
+            }
+        } catch (Exception ignored) {}
+
     }
 
     public void resetBoard() {
@@ -471,6 +552,8 @@ public class Pieces {
 
             try {
                 if (!this.board.gridGame[num1 + 1][num2].name.contains("King")) {
+                    protectingPiece(num1 + 1, num2);
+
                     if (this.board.gridGame[num1 + 1][num2].name.contains("white") && this.name.contains("black") || this.board.gridGame[num1 + 1][num2].name.contains("black") && this.name.contains("white")) {
                         this.board.gridGame[num1 + 1][num2].canBeCaptured = true;
                         this.legalMoves.add(this.board.gridGame[num1 + 1][num2].position);
@@ -480,6 +563,8 @@ public class Pieces {
             }
 
             if (!this.board.gridGame[num1 - 1][num2].name.contains("King")) {
+                protectingPiece(num1 - 1, num2);
+
                 if (this.board.gridGame[num1 - 1][num2].name.contains("white") && this.name.contains("black") || this.board.gridGame[num1 - 1][num2].name.contains("black") && this.name.contains("white")) {
                     this.board.gridGame[num1 - 1][num2].canBeCaptured = true;
                     this.legalMoves.add(this.board.gridGame[num1 - 1][num2].position);
@@ -494,38 +579,55 @@ public class Pieces {
         try {
             if (this.board.gridGame[num1][num2].name.isEmpty()) {
                 this.legalMoves.add(this.board.gridGame[num1][num2].position);
+            }
+            if (!this.board.gridGame[num1][num2].name.contains("King")) {
 
-                if (!this.board.gridGame[num1][num2].name.contains("King")) {
-                    if (this.board.gridGame[num1][num2].name.contains("white") && this.name.contains("black")) {
-                        this.board.gridGame[num1][num2].canBeCaptured = true;
-                        this.legalMoves.add(this.board.gridGame[num1][num2].position);
-                    } else if (this.board.gridGame[num1][num2].name.contains("black") && this.name.contains("white")) {
-                        this.board.gridGame[num1][num2].canBeCaptured = true;
-                        this.legalMoves.add(this.board.gridGame[num1][num2].position);
-                    }
+                //Protecting a piece When they are the same color by adding protected to the position to not display the move
+
+                protectingPiece(num1, num2);
+
+                //Normal Capture
+                if (this.board.gridGame[num1][num2].name.contains("white") && this.name.contains("black")) {
+                    this.board.gridGame[num1][num2].canBeCaptured = true;
+                    this.legalMoves.add(this.board.gridGame[num1][num2].position);
+                } else if (this.board.gridGame[num1][num2].name.contains("black") && this.name.contains("white")) {
+                    this.board.gridGame[num1][num2].canBeCaptured = true;
+                    this.legalMoves.add(this.board.gridGame[num1][num2].position);
                 }
             }
+
         } catch (Exception ignored) {
         }
     }
 
     public void legalMovesKing(int num1, int num2) {
         try {
+            //Je sais plus pourquoi j'ai fait ca
             if (!(this.name.equals("blackKing") && this.board.gridGame[num1][num2].controlledByWhite) && !(this.name.equals("whiteKing") && this.board.gridGame[num1][num2].controlledByBlack)) {
+
+                //If the chosen tile is empty move like a king move in chess
                 if (this.board.gridGame[num1][num2].name.isEmpty()) {
                     this.legalMoves.add(this.board.gridGame[num1][num2].position);
                 }
-                if (!(isProtected(this.board.gridGame[num1][num2]) && this.name.contains("King"))) {
-                    if (!this.board.gridGame[num1][num2].name.contains("King")) {
-                        if (this.board.gridGame[num1][num2].name.contains("white") && this.name.contains("black")) {
-                            this.board.gridGame[num1][num2].canBeCaptured = true;
-                            this.legalMoves.add(this.board.gridGame[num1][num2].position);
-                        } else if (this.board.gridGame[num1][num2].name.contains("black") && this.name.contains("white")) {
-                            this.board.gridGame[num1][num2].canBeCaptured = true;
-                            this.legalMoves.add(this.board.gridGame[num1][num2].position);
-                        }
+
+                protectingPiece(num1, num2);
+
+                //Capturing when being black maybe I will change it
+                if(this.board.gridGame[num1][num2].name.contains("white") && this.name.contains("black")){
+                    if (!(isProtected(this.board.gridGame[num1][num2]) && this.name.contains("King"))) {
+                        this.board.gridGame[num1][num2].canBeCaptured = true;
+                        this.legalMoves.add(this.board.gridGame[num1][num2].position);
                     }
                 }
+
+                //Capturing when being white maybe I will change it
+                else if(this.board.gridGame[num1][num2].name.contains("black") && this.name.contains("white")){
+                    if (!(isProtected(this.board.gridGame[num1][num2]) && this.name.contains("King"))) {
+                        this.board.gridGame[num1][num2].canBeCaptured = true;
+                        this.legalMoves.add(this.board.gridGame[num1][num2].position);
+                    }
+                }
+                //castle
                 castle();
             }
         } catch (Exception ignored) {
@@ -536,11 +638,15 @@ public class Pieces {
         int column1 = column;
         int row1 = row;
 
+        //TODO Have to find a way to add encountering same color piece to the legalMoves list without displaying it nor being able to capture
         try {
             for (int i = 0; i < 8; i++) {
                 if (this.board.gridGame[num1 + column1][num2 + row1].name.contains("white") && this.name.contains("white") || this.board.gridGame[num1 + column1][num2 + row1].name.contains("black") && this.name.contains("black")) {
+                    this.legalMoves.add(this.board.gridGame[num1 + column1][num2 + row1].position + "Protected");
                     break;
-                } else if (this.board.gridGame[num1 + column1][num2 + row1].name.isEmpty()) {
+                }
+
+                else if (this.board.gridGame[num1 + column1][num2 + row1].name.isEmpty()) {
                     this.legalMoves.add(this.board.gridGame[num1 + column1][num2 + row1].position);
                 }
 
@@ -569,17 +675,23 @@ public class Pieces {
     public boolean isProtected(Pieces piece) {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
+                if(!this.board.gridGame[i][j].name.contains("King")){
+                    this.board.gridGame[i][j].innitLegalAllMoves();
+                }
                 for (String arr : this.board.gridGame[i][j].legalMoves) {
-                    if(!this.board.gridGame[i][j].name.contains("King")){
-                        this.board.gridGame[i][j].innitLegalMoves();
-                    }
-                    if (arr.equals(piece.position) && ((piece.name.contains("black") && this.board.gridGame[i][j].name.contains("black")) || (piece.name.contains("white") && this.board.gridGame[i][j].name.contains("white")))) {
+                    if (arr.equals(piece.position + "Protected") && ((piece.name.contains("black") && this.board.gridGame[i][j].name.contains("black")) || (piece.name.contains("white") && this.board.gridGame[i][j].name.contains("white")))) {
                         return true;
                     }
                 }
             }
         }
         return false;
+    }
+
+    public void protectingPiece(int a, int b){
+        if (this.board.gridGame[a][b].name.contains("white") && this.name.contains("white") || this.board.gridGame[a][b].name.contains("black") && this.name.contains("black")) {
+            this.legalMoves.add(this.board.gridGame[a][b].position + "Protected");
+        }
     }
 
     public void castle() {
